@@ -1,0 +1,48 @@
+﻿@section Styles {
+    <style>
+        .custom-img-width {
+            width: 300px; /* 设置所需的宽度 */
+        }
+    </style>
+}
+
+@{
+    ViewData["Title"] = "Json的travel資料回家作業";
+}
+
+<h1>Json的travel資料回家作業</h1>
+<div id="card" class="row"></div>
+
+
+
+@section Scripts {
+    <script src="~/js/travel.js"></script>
+    <script>
+
+        const spotdata = spots.CommonFormat.Section.map(spot => {
+            const imageSrc = spot.file.img[0].text
+            const Title = spot.stitle
+            const Description = spot.xbody.substring(1, 100)
+            const Footer = spot.address
+            console.log(spot.RowNumber)
+
+            return (
+                `
+                        <div class="col-md-3 mb-3">
+                            <div class="card mb-3">
+                         <img src="${imageSrc}" class="card-img-top custom-img-width" alt="${Title}">
+                                    <div class="card-body h-100">
+                                 <h5 class="card-title"> ${spot.stitle}</h5>
+                                 <p class="card-text"> ${Description}</p>
+                                 <p class="card-text"> <small class="text-muted">${Footer}</small></p >
+                            </div>
+                    </div>
+                            </div>
+                `
+            )
+        })
+
+        document.getElementById('card').innerHTML = spotdata.join("");
+
+    </script>
+}

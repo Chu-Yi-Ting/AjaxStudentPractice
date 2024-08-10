@@ -1,0 +1,38 @@
+﻿@{
+    ViewData["Title"] = "ShowImages";
+}
+
+<h1>ShowImages</h1>
+<input type="number" id="numberId" />
+<hr />
+<img id="img1" class="w-75 img-thumbnail" />
+
+@section Styles {
+
+}
+
+@section Scripts {
+    <script>
+        const myImg = document.querySelector('#img1');
+        const numId = document.querySelector('#numberId');
+        numId.addEventListener('keydown', async (event) => {
+            if (event.which === 13) {
+                const api = `@Url.Content("~/Api/Avatar")/${numId.value}`
+                const response = await fetch(api)
+                if (!response.ok) {
+                    alert("找不到圖片")
+                }
+                const img = await response.blob()
+                myImg.src = URL.createObjectURL(img)
+            }
+
+        })
+
+        // (async () => {
+        //     const api = '@Url.Content("~/Api/Avatar")'
+        //     const response = await fetch(api)
+        //     const img = await response.blob()
+        //     myImg.src = URL.createObjectURL(img)
+        // })()
+    </script>
+}

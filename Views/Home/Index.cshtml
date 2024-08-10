@@ -1,0 +1,85 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Ajax應用實作</h1>
+    <button id="homework1" class="btn btn-primary">作業一p.44</button>
+    <button id="practice1" class="btn btn-primary">做做看一p.68</button>
+    <button id="homework2" class="btn btn-primary">作業二p.69</button>
+    <button id="homework3" class="btn btn-primary">作業三p.79</button>
+</div>
+
+@section Scripts
+{
+    <script>
+        // setTimeout(function () {
+        //     console.log("A");
+        //     setTimeout(function () {
+        //         console.log("B");
+        //         setTimeout(function () {
+        //             console.log("C");
+        //         }, 1000);
+        //     }, 1000);
+        // }, 1000);
+
+        function printSomething(data) {
+            const promise = new Promise(function (resolve, reject) {
+                setTimeout(function () {
+                    resolve(data)
+                }, 1000);
+            })
+            return promise
+        }
+
+        printSomething('A')
+            .then(data => {
+                console.log(data)
+                return printSomething('B')
+            })
+            .then(data => {
+                console.log(data)
+                return printSomething('C')
+            })
+            .then(data => {
+                console.log(data)
+                return printSomething('D')
+            })
+            .finally(() => {
+                console.log('END')
+            })
+
+        //async await 語法糖
+        // async function callPromise() {
+        //     let data = await printSomething('A')
+        //     console.log(data)
+        //     data = await printSomething('B')
+        //     console.log(data)
+        //     data = await printSomething('C')
+        //     console.log(data)
+        // }
+        
+        // callPromise()
+        
+        const Homework1 = document.querySelector('#homework1')
+        Homework1.addEventListener("click", function () {
+            window.location.href = "@Url.Action("JsonHomework", "Home")"; // 替换为你的控制器和Action名称
+            });
+
+        const Practice1 = document.querySelector('#practice1')
+        Practice1.addEventListener("click", function () {
+            window.location.href = "@Url.Action("Address", "Home")"; // 替换为你的控制器和Action名称
+        });
+
+        const Homework2 = document.querySelector('#homework2')
+        Homework2.addEventListener("click", function () {
+            window.location.href = "@Url.Action("Register", "Home")"; // 替换为你的控制器和Action名称
+        });
+
+        const Homework3 = document.querySelector('#homework3')
+        Homework3.addEventListener("click", function () {
+            window.location.href = "@Url.Action("Register", "Home")"; // 替换为你的控制器和Action名称
+        });
+
+    </script>
+}

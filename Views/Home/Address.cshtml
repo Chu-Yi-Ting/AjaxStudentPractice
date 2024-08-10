@@ -1,0 +1,63 @@
+﻿@{
+    ViewData["Title"] = "Address";
+}
+
+<h1>Address</h1>
+
+<select id="selectCity">
+    <option value="0">---請選擇一個城市---</option>
+</select>
+<select id="selectDistrict">
+    <option value="0">---選擇一個鄉、鎮、區---</option>
+</select>
+<select id="selectRoad">
+    <option value="0">---選擇一條路---</option>
+</select>
+<div id="div1" class="m-3"></div>
+
+@section Styles {
+
+}
+
+@section Scripts {
+    <script>
+
+        (async () => {
+            const api = '@Url.Content("~/Api/Cities")'
+            const response = await fetch(api)
+            const cities = await response.json()
+            // console.log(cities)
+            const eleCities = cities.map(city =>`<option value='${city}'>${city}</option>`)
+            // selCity.innerHTML = eleCities.join("")
+            selCity.insertAdjacentHTML('beforeend', eleCities.join(""))
+        })();
+
+        const selCity = document.querySelector('#selectCity')
+        const selDistrict = document.querySelector('#selectDistrict')
+        const selRoad = document.querySelector('#selectRoad')
+        const divInfo = document.querySelector('#div1')
+
+        //可以選擇鄉鎮區
+        selCity.addEventListener('change', async () => {
+            const api = `@Url.Content("~/Api/Districts")?city=${selCity.value}`
+            const response = await fetch(api)
+            const dataDistricts = await response.json()
+            const eleDistricts = dataDistricts.map(district => {
+                const trimmedDistrict = district.substring(3);
+                return `<option value='${district}'>${trimmedDistrict}</option>`
+            })
+            selDistrict.insertAdjacentHTML('beforeend', eleDistricts.join(""))
+        })
+
+        //可以選擇路
+        selDistrict.addEventListener('change', async () => {
+            const api = `@Url.Content("~/Api/Roads")?SiteId=${selDistrict.value}`
+            const response = await fetch(api)
+            const dataRoads = await response.json()
+            const eleRoads = dataRoads.map(road => {
+                return`<option value='${road}'>${road}</option>`
+            })
+            selRoad.insertAdjacentHTML('beforeend', eleRoads.join(""))
+        })
+    </script>
+}

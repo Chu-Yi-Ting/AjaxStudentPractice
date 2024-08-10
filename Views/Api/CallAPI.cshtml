@@ -1,0 +1,93 @@
+﻿@{
+    ViewData["Title"] = "CallAPI";
+}
+
+<h1>CallAPI</h1>
+<div>
+    <img src="~/images/lingchor-jslqnpmlzje-unsplash.jpg" alt="plant" class="w-50 img-thumbnail" />
+</div>
+<button id="buttonStart" class="btn btn-primary mt-3">Ajax 開始</button>
+<button id="buttonStop" class="btn btn-danger">Ajax 停止</button>
+<iframe id="img1" src="https://giphy.com/embed/uIJBFZoOaifHf52MER" width="200" height="200" style="display:none" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+<div id="div1" class="alert alert-secondary mt-3"></div>
+
+@section Styles {
+    <style>
+    </style>
+}
+
+@section Scripts {
+    <script>
+        // console.log(fetch('/api/index')) //得到是一個Promise物件
+        // fetch('/api/index')
+        //     .then(response => {
+        //         console.log(response)
+        //         return response.text() //得到又是一個Promise物件
+        // //     })
+        // //     .then(data => console.log(data)) //Ajax, 您好
+        // // //找到要控制對象
+        const btnStart = document.querySelector('#buttonStart')
+        const divMessage = document.querySelector('#div1')
+        const imgLoading = document.querySelector('#img1')
+        const btnStop = document.querySelector('#buttonStop')
+        // //綁定事件(使用者行為)
+        // btnStart.addEventListener('click', () => {
+        btnStart.addEventListener('click', async () => {
+
+            //顯示執行中的圖示
+            imgLoading.style.display = 'inline'
+            btnStart.setAttribute('disabled', 'disabled')
+            btnStart.textContent = '執行中...'
+
+            //建立AbortController產生signal
+            abortController = new AbortController()
+            const signal = abortController.signal;
+            setTimeout(() => {
+                abortController.abort()
+            }, 3000)
+
+            //停止Ajax呼叫
+            btnStop.addEventListener('click', () => {
+                if (abortController) {
+                    abortController.abort()
+                }
+
+            })           
+
+            //     //做甚麼事 call api
+            //     // console.log(fetch('/api/index')) //得到是一個Promise物件
+            //     fetch('@Url.Content("~/api/index")')
+            //         .then(response => {
+            //             console.log(response)
+            //             return response.text() //得到又是一個Promise物件
+            //         })
+            //         .then(data => divMessage.innerHTML = `<h3>${data}</h3>`) //Ajax, 您好
+            // })
+            try {
+                // const response = await fetch('@Url.Content("~/api/index")')
+                const response = await fetch('@Url.Content("~/api/index")', { signal })
+                if (!response.ok) {
+                    throw new Error(`＄{ response.status }`)
+                }
+                const data = await response.text()
+                divMessage.innerHTML = `<h3>${data}</h3>`
+                // } catch (error) {
+                //     divMessage.innerHTML = `<h3>${error.message}</h3>`
+                // }
+            } catch (error) {
+                let message = error.message
+                if (error.name === 'AbortError') {
+                    message = '伺服器忙碌中請稍後再來'
+                }
+                divMessage.innerHTML = `<h3>${message}</h3>`
+            } finally {
+                //顯示執行中的圖示
+                imgLoading.style.display = 'none'
+                btnStart.removeAttribute('disabled')
+                btnStart.textContent = 'Ajax 開始'
+            }
+
+        })
+
+    </script>
+}
