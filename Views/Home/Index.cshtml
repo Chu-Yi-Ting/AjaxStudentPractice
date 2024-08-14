@@ -8,6 +8,7 @@
     <button id="practice1" class="btn btn-primary">做做看一p.68</button>
     <button id="homework2" class="btn btn-primary">作業二p.69</button>
     <button id="homework3" class="btn btn-primary">作業三p.79</button>
+    <button id="homework4" class="btn btn-primary">作業四p.90</button>
 </div>
 
 @section Scripts
@@ -79,6 +80,11 @@
         const Homework3 = document.querySelector('#homework3')
         Homework3.addEventListener("click", function () {
             window.location.href = "@Url.Action("Register", "Home")"; // 替换为你的控制器和Action名称
+        });
+
+        const Homework4 = document.querySelector('#homework4')
+        Homework4.addEventListener("click", function () {
+            window.location.href = "@Url.Action("Travel", "Home")"; // 替换为你的控制器和Action名称
         });
 
     </script>

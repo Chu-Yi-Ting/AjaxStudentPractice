@@ -1,21 +1,175 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Travel";
 }
 
-<h1>Travel</h1>
+<h1>台北市景點</h1>
+<div class="row mb-3">    
+    <div class="d-flex align-items-center col-4">
+        <select id="numberSelect" class="form-select order-select" aria-label="Order by" style="width: 150px">
+            <option value="6">每頁6筆資料</option>
+            <option value="7">每頁7筆資料</option>
+            <option value="8">每頁8筆資料</option>
+            <option value="9">每頁9筆資料</option>
+        </select>        
+    </div>
+    <div class="d-flex align-items-center col-4">
+        <nav aria-label="...">
+            <ul class="pagination pagination-sm" id="ul1">
+            </ul>
+        </nav>
+    </div>
+    <div class="d-flex align-items-center col-4">
+        <select id="orderSelect" class="form-select order-select" aria-label="Order by" style="width: 150px">
+            <option value="asc">景點編號升冪</option>
+            <option value="desc">景點編號降冪</option>
+        </select>
+        <input type="search" placeholder="搜尋景點" id="inputSearch" class="form-control" style="width: 200px" />
+    </div>
+    <div id="Category" class="btn-group" role="group" aria-label="景點分類">
+    </div>
+</div>
+<div class="row row-cols-1 row-cols-md-3 g-4" id="div1"></div>
 
-@section Styles {
-    <style>
-    </style>
-}
+    @section Styles {
+        <style>
+            li {
+                cursor: pointer
+            }
 
-@section Scripts {
-    <script>
-        const datas = { "categoryId": 0, "keyword": "abc" }
-        console.log(datas)
-        const strDatas = JSON.stringify(datas)
-        console.log(strDatas)
-        console.log(JSON.parse(strDatas))
-    </script>
-}
+            .order-select {
+                margin-right: 20px; /* 设置右侧间距 */
+            }
+
+            .btn-outline-primary:hover {
+                background-color: #90EE90; /* 浅绿色背景 */
+                border-color: #90EE90; /* 浅绿色边框 */
+                color: white; /* 白色文字 */
+            }
+
+        .d-flex.align-items-center col-6 {
+            justify-content: flex-start;
+        }
+        </style>
+    }
+
+    @section Scripts {
+        <script>
+            // const datas = { "categoryId": 0, "keyword": "abc" }
+            // console.log(datas)
+            // const strDatas = JSON.stringify(datas)
+            // console.log(strDatas)
+            // console.log(JSON.parse(strDatas))
+
+            const searchData = {
+                "categoryId": 0,
+                "keyword": "台北",
+                "page": 1,
+                "pageSize": 9,
+                "sortType": "desc",
+                "sortBy": "categoryId"
+            }
+
+            const divSpots = document.querySelector('#div1')
+            const ulPage = document.querySelector('#ul1')
+            const inpSearch = document.querySelector('#inputSearch')
+            const selSearch = document.querySelector('#orderSelect')
+            const divCategory = document.querySelector('#Category')
+            const selNumber = document.querySelector('#numberSelect')
+
+            //關鍵字搜尋
+            inpSearch.addEventListener('keydown', event => {
+                if (event.which === 13) {
+                    searchData.keyword = inpSearch.value
+                    loadSpots()
+                }
+            })
+
+            //下拉式選單排序
+            selSearch.addEventListener('click', event => {
+                searchData.sortType = selSearch.value
+                loadSpots()
+            })
+
+            //景點分類排序
+            divCategory.addEventListener('click', event => {
+                if (event.target.tagName === 'BUTTON') {  // 確保點擊的是按鈕
+                    const categoryId = event.target.value; // 獲取按鈕的分類ID
+                    searchData.categoryId = categoryId;   
+                    searchData.page = 1;  
+                    loadSpots();  
+                }
+            })
+
+            //每頁資料筆數
+            selNumber.addEventListener('click', event => {
+                searchData.pageSize = selNumber.value
+                loadSpots()
+            })
+
+            //載入景點資料
+            const loadSpots = async () => {
+                const api = '@Url.Content("~/api/spots")'
+                const response = await fetch(api, {
+                    method: 'POST',
+                    body: JSON.stringify(searchData),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                const data = await response.json()
+                console.log(data)
+
+                //JSON 資料讀取及顯示
+                const spots = data.spotsResult.map(spot => {
+                    const { address, spotTitle, spotDescription, spotImage, spotId } = spot
+                    return (`
+                              <div class="col">
+                                <div class="card h-100">
+                                  <img src="${spotImage}" class="card-img-top img-th" alt="${spotTitle}">
+                                    <div class="card-body">
+                                      <h5 class="card-title">${spotTitle}</h5>
+                                      <p class="card-text">${spotDescription.length <= 100 ? spotDescription : spotDescription.substring(0, 100)}...</p>
+                                    </div>
+                                    <div class="card-footer">
+                                      <small class="text-body-secondary" > ${address} </small>
+                                    </div>
+                                </div>
+                              </div>
+                          `)
+                })
+                divSpots.innerHTML = spots.join("")
+
+                //產生分頁按鈕
+                let liPages = ""
+                for (let i = 1, max = data.totalPages; i <= max; i++) {
+                    liPages += `<li class="page-item" onclick="pagingHandler(${i})"><a class="page-link">${i}</a></li>`
+                }
+                ulPage.innerHTML = liPages;
+            }
+
+            //分頁
+            const pagingHandler = page => {
+                searchData.page = page
+                loadSpots()
+
+            }
+
+            loadSpots()
+
+            //載入景點分類資料
+            const loadCategories = async () => {
+                const api = '@Url.Content("~/Api/Categories")'
+                const response = await fetch(api)
+                const data = await response.json()
+                console.log(data)
+
+                const categories = data.categoriesResult.map(category => {
+                    const { categoryId, categoryName } = category
+                return (`<button id="btnCategory${categoryId}" type="button" class="btn btn-outline-primary" value="${categoryId}">${categoryName}</button>`)
+                })
+
+                divCategory.innerHTML = categories.join("")
+            }
+            loadCategories()
+        </script>
+    }

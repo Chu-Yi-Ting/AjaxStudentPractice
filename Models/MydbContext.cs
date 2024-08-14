@@ -25,9 +25,11 @@ public partial class MydbContext : DbContext
 
     public virtual DbSet<SpotImage> SpotImages { get; set; }
 
+    public virtual DbSet<SpotImagesSpot> SpotImagesSpots { get; set; }
+
 //    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-//        => optionsBuilder.UseSqlServer("Data Source=DESKTOP-RAE7E6C;Initial Catalog=mydb;Integrated Security=true;Encrypt=true;TrustServerCertificate=true");
+//        => optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=mydb;Integrated Security=true;Encrypt=true;TrustServerCertificate=true");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -76,6 +78,19 @@ public partial class MydbContext : DbContext
         modelBuilder.Entity<SpotImage>(entity =>
         {
             entity.HasKey(e => e.ImageId);
+        });
+
+        modelBuilder.Entity<SpotImagesSpot>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("SpotImagesSpot");
+
+            entity.Property(e => e.Address).HasMaxLength(200);
+            entity.Property(e => e.DateCreated).HasColumnType("datetime");
+            entity.Property(e => e.Latitude).HasMaxLength(20);
+            entity.Property(e => e.Longitude).HasMaxLength(20);
+            entity.Property(e => e.SpotTitle).HasMaxLength(50);
         });
 
         OnModelCreatingPartial(modelBuilder);

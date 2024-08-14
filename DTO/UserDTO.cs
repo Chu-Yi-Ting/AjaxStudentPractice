@@ -1,4 +1,4 @@
-﻿namespace AjaxDemo.Models
+﻿namespace AjaxDemo.DTO
 {
     public class UserDTO
     {
